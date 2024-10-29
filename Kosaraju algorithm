@@ -1,0 +1,63 @@
+from collections import defaultdict, deque
+
+def kosaraju(graph):
+    def dfs(v):
+        visited.add(v)
+        for neighbor in graph[v]:
+            if neighbor not in visited:
+                dfs(neighbor)
+        stack.append(v)
+
+    def reverse_graph():
+        reversed_graph = defaultdict(list)
+        for v in graph:
+            for neighbor in graph[v]:
+                reversed_graph[neighbor].append(v)
+        return reversed_graph
+
+    def dfs_reverse(v):
+        visited.add(v)
+        component.append(v)
+        for neighbor in reversed_graph[v]:
+            if neighbor not in visited:
+                dfs_reverse(neighbor)
+
+    # Step 1: Order vertices by finish times
+    visited = set()
+    stack = []
+    
+    for vertex in graph:
+        if vertex not in visited:
+            dfs(vertex)
+
+    # Step 2: Reverse the graph
+    reversed_graph = reverse_graph()
+
+    # Step 3: Perform DFS on the reversed graph
+    visited.clear()
+    sccs = []
+
+    while stack:
+        vertex = stack.pop()
+        if vertex not in visited:
+            component = []
+            dfs_reverse(vertex)
+            sccs.append(component)
+
+    return sccs
+
+# Example usage
+graph = {
+    0: [1],
+    1: [2],
+    2: [0, 3],
+    3: [4],
+    4: [5],
+    5: [3],
+    6: [5],
+    7: [8],
+    8: [7]
+}
+
+sccs = kosaraju(graph)
+print("Strongly Connected Components:", sccs)
