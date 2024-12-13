@@ -1,0 +1,49 @@
+class UnionFind:
+    def __init__(self, vertices):
+        self.parent = {v: v for v in vertices}
+        self.rank = {v: 0 for v in vertices}
+
+    def find(self, vertex):
+        if self.parent[vertex] != vertex:
+            self.parent[vertex] = self.find(self.parent[vertex]) 
+        return self.parent[vertex]
+
+    def union(self, vertex1, vertex2):
+        root1 = self.find(vertex1)
+        root2 = self.find(vertex2)
+
+        if root1 != root2:
+            if self.rank[root1] > self.rank[root2]:
+                self.parent[root2] = root1
+            elif self.rank[root1] < self.rank[root2]:
+                self.parent[root1] = root2
+            else:
+                self.parent[root2] = root1
+                self.rank[root1] += 1
+
+def kruskal_algorithm(vertices, edges):
+        vertices (list): List of vertices in the graph.
+        edges (list): List of edges in the form (weight, vertex1, vertex2).
+
+    Returns:
+        mst (list): List of edges in the MST in the form (weight, vertex1, vertex2).
+    edges.sort()
+    uf = UnionFind(vertices)
+    mst = []
+
+    for weight, vertex1, vertex2 in edges:
+        if uf.find(vertex1) != uf.find(vertex2):
+            mst.append((weight, vertex1, vertex2))
+            uf.union(vertex1, vertex2)
+      return mst
+vertices = ['A', 'B', 'C', 'D']
+edges = [
+    (1, 'A', 'B'),
+    (4, 'A', 'C'),
+    (2, 'B', 'C'),
+    (6, 'B', 'D'),
+    (3, 'C', 'D')
+]
+
+mst = kruskal_algorithm(vertices, edges)
+print("Minimum Spanning Tree:", mst)
