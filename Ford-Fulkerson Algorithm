@@ -1,0 +1,42 @@
+def ford_fulkerson(capacity, source, sink):
+    flow = {u: {v: 0 for v in capacity} for u in capacity}
+
+    def dfs(current, flow_so_far, visited):
+        if current == sink:
+            return flow_so_far
+
+        visited.add(current)
+        for neighbor in capacity[current]:
+            residual_capacity = capacity[current][neighbor] - flow[current][neighbor]
+            if neighbor not in visited and residual_capacity > 0:
+                bottleneck = dfs(neighbor, min(flow_so_far, residual_capacity), visited)
+                if bottleneck > 0:
+                    # Update flow
+                    flow[current][neighbor] += bottleneck
+                    flow[neighbor][current] -= bottleneck
+                    return bottleneck
+        return 0
+
+    max_flow = 0
+
+    while True:
+        visited = set()
+        bottleneck = dfs(source, float('inf'), visited)
+        if bottleneck == 0:
+            break  
+        max_flow += bottleneck
+
+    return max_flow
+capacity = {
+    'S': {'A': 10, 'B': 5},
+    'A': {'B': 15, 'C': 10},
+    'B': {'C': 10, 'D': 10},
+    'C': {'T': 10},
+    'D': {'T': 10},
+    'T': {}
+}
+
+source = 'S'
+sink = 'T'
+max_flow = ford_fulkerson(capacity, source, sink)
+print("Maximum Flow:", max_flow)
